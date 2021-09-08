@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moqi.scheduleminiprogrambackend.mapperService.ScheduleMapper">
+  <resultMap id="BaseResultMap" type="com.moqi.scheduleminiprogrambackend.po.Schedule">
+      <result column="scheduleId" property="scheduleId"/>
+      <result column="date" property="date"/>
+      <result column="startTime" property="startTime"/>
+      <result column="endTime" property="endTime"/>
+      <result column="place" property="place"/>
+      <result column="content" property="content"/>
+   </resultMap>
+    <insert id="insert" parameterType="com.moqi.scheduleminiprogrambackend.po.Schedule">
+        insert into schedule (date,startTime,endTime,place,content) values (#{date},#{startTime},#{endTime},
+                                     #{place},#{content});
+    </insert>
+    <update id="updateTime">
+        update schedule set startTime=#{startTime},endTime=#{endTime} where scheduleId=#{scheduleId};
+    </update>
+    <delete id="delete">
+        delete from schedule where scheduleId=#{id};
+    </delete>
+
+    <select id="selectByDate" parameterType="java.sql.Date" resultType="com.moqi.scheduleminiprogrambackend.po.Schedule">
+        select * from schedule where  #{endDate}>=date and date>=#{startDate};
+    </select>
+    <select id="selectById" resultType="com.moqi.scheduleminiprogrambackend.po.Schedule">
+        select * from schedule where scheduleId=#{id};
+    </select>
+    <select id="getLastestId" resultType="java.lang.Integer">
+        select max(scheduleId) from schedule;
+    </select>
+</mapper>
