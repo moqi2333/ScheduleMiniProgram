@@ -1,5 +1,6 @@
 package com.moqi.scheduleminiprogrambackend.serviceImpl;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.moqi.scheduleminiprogrambackend.mapperService.PermissionMapper;
 import com.moqi.scheduleminiprogrambackend.mapperService.UserMapper;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
             //编写返回信息
             HashMap<String, Object> res= ResponseUtil.createResponse(Constant.SUCCESS,"新用户");
             res.put("skey",skey);
-            System.out.println("新用户"+user.getOpenId()+"登录");
+            System.out.println(new DateTime() +" 新用户"+user.getOpenId()+"登录");
             return new JSONObject(res);
         }
         else {
@@ -82,7 +83,7 @@ public class UserServiceImpl implements UserService {
             //编写返回信息
             HashMap<String, Object> res= ResponseUtil.createResponse(Constant.SUCCESS,"老用户");
             res.put("skey",skey);
-            System.out.println("老用户"+user.getOpenId()+"登录");
+            System.out.println(new DateTime()+" 老用户"+user.getOpenId()+" "+user.getName()+" 登录");
             return new JSONObject(res);
         }
     }

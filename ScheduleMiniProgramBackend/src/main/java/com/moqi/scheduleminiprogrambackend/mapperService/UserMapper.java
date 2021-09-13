@@ -15,5 +15,5 @@ public interface UserMapper {
 
     Integer updateInfoById(User user);
 
-    User getTeacher();
+    User getTeacher(String name);
 }

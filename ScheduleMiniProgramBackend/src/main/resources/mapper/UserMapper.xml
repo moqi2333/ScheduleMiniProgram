@@ -38,7 +38,7 @@
     select * from user where skey=#{skey};
   </select>
   <select id="getTeacher" resultType="com.moqi.scheduleminiprogrambackend.po.User">
-    select * from user where isTeacher=1;
+    select * from user where isTeacher=1 and name=#{name};
   </select>
 
 

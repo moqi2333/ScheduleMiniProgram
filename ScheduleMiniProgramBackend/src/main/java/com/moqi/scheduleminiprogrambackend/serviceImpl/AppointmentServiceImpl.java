@@ -37,6 +37,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Resource
     OssClientUtil ossClientUtil;
 
+    static final String TEACHER_NAME="毕菲菲";
+
     /**
      * 学生创建一个预约
      *
@@ -55,6 +57,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         String dateString=appointmentInfo.get("date");
         String startTimeString=appointmentInfo.get("startTime");
         String endTimeString=appointmentInfo.get("endTime");
+        //对是否填写时间进行判断
+        if(startTimeString==null||endTimeString==null||startTimeString.length()!=5||endTimeString.length()!=5){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未填写时间,请正确填写时间段");
+            return new JSONObject(res);
+        }
         //解析日期
         Date date=Date.valueOf(dateString);
         //解析时间
@@ -79,6 +86,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         String place=appointmentInfo.get("place");
         String content=appointmentInfo.get("content");
         String other=appointmentInfo.get("other");
+        if(place==null){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未填写地点,请正确填写地点");
+            return new JSONObject(res);
+        }
+        if(content==null){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未填写预约相关内容,请正确填写相关内容");
+            return new JSONObject(res);
+        }
         Appointment appointment=new Appointment(date,startTime,endTime,place,content,other,user.getOpenId());
 
         if(appointmentMapper.insert(appointment)>0){
@@ -87,7 +102,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             res.put("appointmentId",appointmentId);
 
             //给老师发送消息
-            User teacher=userMapper.getTeacher();
+            User teacher=userMapper.getTeacher(TEACHER_NAME);
             if("ok".equals(WeChatUtil.sendAppointmentMsg(teacher.getOpenId(),user.getName(),place,dateString+" "+startTimeString,
                     dateString+" "+endTimeString,content))){
                 permissionMapper.updateAppointmentCount(teacher.getOpenId(),"-1");
@@ -136,7 +151,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         if(appointmentMapper.delete(appointmentId)>0){
             res=ResponseUtil.createResponse(Constant.SUCCESS,"取消成功");
             //提醒老师
-            User teacher=userMapper.getTeacher();
+            User teacher=userMapper.getTeacher(TEACHER_NAME);
             //reason暂时没有实现，选择为null，未来可添加
             if("ok".equals(WeChatUtil.sendCancelMsg(teacher.getOpenId(),user.getName(),appointment.getPlace(),appointmentDate.toString(),
                     appointment.getStartTime().toString().substring(0,5),appointment.getEndTime().toString().substring(0,5),null))){

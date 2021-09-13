@@ -27,6 +27,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public JSONObject create(ScheduleVO scheduleVO) {
         HashMap<String,Object> res;
+        if(scheduleVO.getStartTime()==null||scheduleVO.getEndTime()==null
+                ||scheduleVO.getStartTime().length()!=5||scheduleVO.getEndTime().length()!=5){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未填写时间,请正确填写时间段");
+            return new JSONObject(res);
+        }
         Schedule schedule=new Schedule(scheduleVO);
         if(schedule.getStartTime().after(schedule.getEndTime())){
             res=ResponseUtil.createResponse(Constant.FAIL,"开始时间不能大于结束时间");
