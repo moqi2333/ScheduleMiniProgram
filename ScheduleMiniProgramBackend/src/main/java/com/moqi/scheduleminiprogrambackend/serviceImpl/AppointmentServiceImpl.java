@@ -164,13 +164,43 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new JSONObject(res);
     }
 
+    /**
+     * 根据日期获取预约信息，将学生和老师分开处理
+     * @param startDate 开始日期
+     * @param endDate   结束日期
+     * @param skey      登录凭证
+     * @return 定义的返回结构
+     */
     @Override
-    public JSONObject getAppointmentByDate(Date startDate, Date endDate) {
+    public JSONObject getAppointmentByDate(Date startDate, Date endDate, String skey) {
+        HashMap<String,Object> res;
+        //此行用于适配老版本，未来可删除
+        if(skey==null){
+            res=teacherGetAppointmentByDate(startDate,endDate);
+            return new JSONObject(res);
+        }
+
+        User user=userMapper.selectBySkey(skey);
+        if(user==null){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未根据skey查询到相关用户");
+            return new JSONObject(res);
+        }
+        if(user.getIsTeacher()!=0){
+            res=teacherGetAppointmentByDate(startDate,endDate);
+        }
+        else {
+            res=studentGetAppointmentByDate(startDate,endDate,user.getOpenId());
+        }
+        return new JSONObject(res);
+    }
+
+
+    private HashMap<String,Object> teacherGetAppointmentByDate(Date startDate, Date endDate) {
         HashMap<String,Object> res;
         List<Appointment> appointmentList= appointmentMapper.getAppointmentByDate(startDate,endDate);
         if(appointmentList==null){
             res=ResponseUtil.createResponse(Constant.FAIL,"数据库查询出错");
-            return new JSONObject(res);
+            return res;
         }
         //先排序
         appointmentList.sort(Comparator.comparing(Appointment::getDate));
@@ -187,11 +217,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         while(!dateTmp.after(endDate)){
             //双指针实现，当前日期指针和当前列表指针的日期相同，就将元素插入列表中，并移动列表指针
             if(listIndex<length&& appointmentList.get(listIndex).getDate().equals(dateTmp)){
-                AppointmentVO appointmentVO=new AppointmentVO(appointmentList.get(listIndex));
-                User user=userMapper.selectByOpenId(appointmentList.get(listIndex).getStudentOpenId());
+                String studentOpenId=appointmentList.get(listIndex).getStudentOpenId();
+                User user=userMapper.selectByOpenId(studentOpenId);
                 //构造VO
-                appointmentVO.setName(user.getName());
-                appointmentVO.setStudentId(user.getStudentId());
+                AppointmentVO appointmentVO=new AppointmentVO(appointmentList.get(listIndex),user,"true");
+
                 appointmentVOArrayList.add(appointmentVO);
                 listIndex++;
             }
@@ -203,7 +233,50 @@ public class AppointmentServiceImpl implements AppointmentService {
                 jsonIndex++;
             }
         }
-        return new JSONObject(res);
+        return res;
+    }
+
+    private HashMap<String,Object> studentGetAppointmentByDate(Date startDate, Date endDate,String openId){
+        HashMap<String,Object> res;
+
+        List<Appointment> appointmentList= appointmentMapper.getAppointmentByDate(startDate,endDate);
+        if(appointmentList==null){
+            res=ResponseUtil.createResponse(Constant.FAIL,"数据库查询出错");
+            return res;
+        }
+        //先排序
+        appointmentList.sort(Comparator.comparing(Appointment::getDate));
+
+
+        //构造返回值需要的结构
+        int listIndex=0;
+        int jsonIndex=1;
+        int length=appointmentList.size();
+        Date dateTmp=new Date(startDate.getTime());
+        ArrayList<AppointmentVO> appointmentVOArrayList=new ArrayList<>();
+        res=new HashMap<>();
+
+        while(!dateTmp.after(endDate)){
+            //双指针实现，当前日期指针和当前列表指针的日期相同，就将元素插入列表中，并移动列表指针
+            if(listIndex<length&& appointmentList.get(listIndex).getDate().equals(dateTmp)){
+                String studentOpenId=appointmentList.get(listIndex).getStudentOpenId();
+                User user=userMapper.selectByOpenId(studentOpenId);
+                //构造VO
+                AppointmentVO appointmentVO=new AppointmentVO(appointmentList.get(listIndex),user,
+                        studentOpenId.equals(openId)?"true":"false");
+
+                appointmentVOArrayList.add(appointmentVO);
+                listIndex++;
+            }
+            //不相同就将列表加入返回体，移动日期指针,并清空列表
+            else {
+                dateTmp= DateUtil.getNextDay(dateTmp);
+                res.put(String.valueOf(jsonIndex),appointmentVOArrayList);
+                appointmentVOArrayList=new ArrayList<>();
+                jsonIndex++;
+            }
+        }
+        return res;
     }
 
     /**

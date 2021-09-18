@@ -31,12 +31,13 @@ public interface AppointmentService {
 
 
     /**
-     * 通过日期范围获取预约信息
+     * 根据日期获取预约信息，将学生和老师分开处理
      * @param startDate 开始日期
      * @param endDate 结束日期
-     * @return 按规定结构返回数据
+     * @param skey 登录凭证
+     * @return 定义的返回结构
      */
-    public JSONObject getAppointmentByDate(Date startDate,Date endDate);
+    public JSONObject getAppointmentByDate(Date startDate,Date endDate,String skey);
 
 
     /**

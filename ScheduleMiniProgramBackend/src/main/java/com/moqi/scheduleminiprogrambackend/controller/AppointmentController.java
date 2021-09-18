@@ -34,8 +34,9 @@ public class AppointmentController {
 
     @GetMapping("/getAppointmentByDate")
     public JSONObject getAppointmentByDate(@RequestParam(name = "startDate")Date startDate,
-                                           @RequestParam(name = "endDate") Date endDate){
-        return appointmentService.getAppointmentByDate(startDate,endDate);
+                                           @RequestParam(name = "endDate") Date endDate,
+                                           @RequestParam(name = "skey",required = false) String skey){
+        return appointmentService.getAppointmentByDate(startDate,endDate,skey);
     }
 
     @PostMapping("/record")

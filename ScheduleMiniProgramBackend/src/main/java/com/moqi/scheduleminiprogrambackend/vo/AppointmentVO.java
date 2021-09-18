@@ -1,6 +1,7 @@
 package com.moqi.scheduleminiprogrambackend.vo;
 
 import com.moqi.scheduleminiprogrambackend.po.Appointment;
+import com.moqi.scheduleminiprogrambackend.po.User;
 import org.springframework.lang.NonNull;
 
 import java.sql.Date;
@@ -28,6 +29,8 @@ public class AppointmentVO {
 
     private String other;
 
+    private String isVisible;
+
     public AppointmentVO(@NonNull Appointment appointment){
         this.appointmentId=appointment.getAppointmentId();
         this.date=appointment.getDate();
@@ -36,6 +39,19 @@ public class AppointmentVO {
         this.place=appointment.getPlace();
         this.content=appointment.getContent();
         this.other=appointment.getOther();
+    }
+
+    public AppointmentVO(@NonNull Appointment appointment, User user, String isVisible){
+        this.appointmentId=appointment.getAppointmentId();
+        this.date=appointment.getDate();
+        this.startTime=appointment.getStartTime().toString().substring(0,5);
+        this.endTime=appointment.getEndTime().toString().substring(0,5);
+        this.place=appointment.getPlace();
+        this.content=appointment.getContent();
+        this.other=appointment.getOther();
+        this.name=user.getName();
+        this.studentId=user.getStudentId();
+        this.isVisible=isVisible;
     }
 
     public AppointmentVO(int appointmentId, String name, String studentId, String avatar, Date date, String startTime, String endTime, String place, String content, String other) {
@@ -129,5 +145,13 @@ public class AppointmentVO {
 
     public void setOther(String other) {
         this.other = other;
+    }
+
+    public String getIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(String isVisible) {
+        this.isVisible = isVisible;
     }
 }
