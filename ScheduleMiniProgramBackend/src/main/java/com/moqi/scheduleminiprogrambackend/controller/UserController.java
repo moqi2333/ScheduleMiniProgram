@@ -7,6 +7,7 @@ import com.moqi.scheduleminiprogrambackend.vo.UserVO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -35,6 +36,11 @@ public class UserController {
     @GetMapping("/getInformation")
     public ResultVO<UserVO> getInformation(@RequestParam String skey){
         return userService.getInformation(skey);
+    }
+
+    @GetMapping("/getAllUsers")
+    public JSONObject getAllUsers(){
+        return userService.getAllUsers();
     }
 
 }

@@ -37,4 +37,7 @@ public interface AppointmentMapper {
     List<Appointment> getStudentAppointmentByStatus(String openId,int status);
 
     List<Appointment> getStudentFeedbackByStatus(String openId,String isNull);
+
+    List<Appointment> getFormByOpenId(List<String> openId);
+
 }

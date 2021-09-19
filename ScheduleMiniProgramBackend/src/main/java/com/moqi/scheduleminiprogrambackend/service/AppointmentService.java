@@ -134,7 +134,8 @@ public interface AppointmentService {
 
     /**
      * 获取记录的表格
-     * @return 规定数据格式
+     * @param userIds 学生的编号
+     * @return 规定格式
      */
-    public JSONObject getForm();
+    public JSONObject getForm(List<Integer> userIds);
 }

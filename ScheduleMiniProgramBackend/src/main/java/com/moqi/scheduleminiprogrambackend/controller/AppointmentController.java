@@ -104,8 +104,10 @@ public class AppointmentController {
         return appointmentService.getStudentFeedbackByStatus(skey, status);
     }
 
-    @GetMapping("/getForm")
-    public JSONObject getForm(){
-        return appointmentService.getForm();
+    @PostMapping("/getForm")
+    public JSONObject getForm(@RequestParam(name = "userIds") List<Integer> userIds){
+        return appointmentService.getForm(userIds);
     }
+
+
 }

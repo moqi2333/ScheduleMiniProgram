@@ -62,6 +62,12 @@
     <select id="getStudentFeedbackByStatus" resultType="com.moqi.scheduleminiprogrambackend.po.Appointment">
         select * from appointment where studentOpenId=#{openId} and status=1 and feedback is ${isNull} null;
     </select>
+    <select id="getFormByOpenId" resultType="com.moqi.scheduleminiprogrambackend.po.Appointment">
+        select * from appointment where status=1 and record is not null and studentOpenId in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
 
 </mapper>

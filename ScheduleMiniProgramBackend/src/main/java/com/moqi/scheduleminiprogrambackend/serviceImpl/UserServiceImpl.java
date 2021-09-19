@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -126,5 +128,19 @@ public class UserServiceImpl implements UserService {
             return new ResultVO<>(Constant.FAIL,"skey错误，尚无此用户");
         }
         return new ResultVO<>(Constant.SUCCESS,"获取成功",new UserVO(user));
+    }
+
+    /**
+     * 获取所有注册学生的信息
+     * @return 注册学生信息的列表
+     */
+    @Override
+    public JSONObject getAllUsers() {
+        HashMap<String,Object> res;
+        List<User> userList=userMapper.getAllStudentUsers();
+        List<UserVO> userVOList=userList.stream().map(UserVO::new).collect(Collectors.toList());
+        res=ResponseUtil.createResponse(Constant.SUCCESS,"查询成功");
+        res.put("data",userVOList);
+        return new JSONObject(res);
     }
 }

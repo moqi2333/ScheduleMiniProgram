@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.moqi.scheduleminiprogrambackend.mapperService.MessageZoneMapper">
+
+  <resultMap id="BaseResultMap" type="com.moqi.scheduleminiprogrambackend.po.MessageZone">
+    <result column="messageZoneId" property="messageZoneId"/>
+    <result column="studentOpenId" property="studentOpenId"/>
+    <result column="topic" property="topic"/>
+    <result column="createTime" property="createTime"/>
+  </resultMap>
+  <insert id="insert">
+    insert into messageZone (studentOpenId,topic,createTime)
+    values (#{studentOpenId},#{topic},#{createTime});
+  </insert>
+  <select id="getAllMessageZone" resultType="com.moqi.scheduleminiprogrambackend.po.MessageZone">
+    select * from messageZone;
+  </select>
+    <select id="getMessageZoneByOpenId" resultType="com.moqi.scheduleminiprogrambackend.po.MessageZone">
+      select * from messageZone where studentOpenId=#{openId};
+    </select>
+  <select id="getMessageZoneById" resultType="com.moqi.scheduleminiprogrambackend.po.MessageZone">
+    select * from messageZone where messageZoneId=#{id};
+  </select>
+
+
+</mapper>

@@ -18,4 +18,10 @@ public interface UserService {
     ResultVO<UserVO> getInformation(String skey);
 
     /*JSONObject updataInformation()*/
+
+    /**
+     * 获取所有注册学生的信息
+     * @return 注册学生信息的列表
+     */
+    JSONObject getAllUsers();
 }

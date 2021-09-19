@@ -17,6 +17,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author moqi
@@ -194,7 +195,12 @@ public class AppointmentServiceImpl implements AppointmentService {
         return new JSONObject(res);
     }
 
-
+    /**
+     * 老师可以查看所有的预约信息
+     * @param startDate 开始日期
+     * @param endDate 结束日期
+     * @return 规定的返回结构
+     */
     private HashMap<String,Object> teacherGetAppointmentByDate(Date startDate, Date endDate) {
         HashMap<String,Object> res;
         List<Appointment> appointmentList= appointmentMapper.getAppointmentByDate(startDate,endDate);
@@ -236,6 +242,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         return res;
     }
 
+    /**
+     * 学生只能查看自己的预约
+     * @param startDate 开始时间
+     * @param endDate 结束时间
+     * @param openId 学生唯一标识，按此标识判断是否可见
+     * @return 规定的返回结构
+     */
     private HashMap<String,Object> studentGetAppointmentByDate(Date startDate, Date endDate,String openId){
         HashMap<String,Object> res;
 
@@ -653,9 +666,11 @@ public class AppointmentServiceImpl implements AppointmentService {
      * @return 规定数据格式
      */
     @Override
-    public JSONObject getForm() {
+    public JSONObject getForm(List<Integer> userIds) {
         HashMap<String,Object> res;
-        List<Appointment> appointmentList=appointmentMapper.getAllByRecordStatus("not");
+        List<User> userList=userMapper.getStudentByUserId(userIds);
+        List<String> openIdList=userList.stream().map(User::getOpenId).collect(Collectors.toList());
+        List<Appointment> appointmentList=appointmentMapper.getFormByOpenId(openIdList);
         appointmentList.sort(Comparator.comparing(Appointment::getDate));
         List<ExcelInfo> excelInfos=new ArrayList<>();
         for (Appointment appointment : appointmentList) {

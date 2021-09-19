@@ -2,6 +2,8 @@ package com.moqi.scheduleminiprogrambackend.mapperService;
 
 import com.moqi.scheduleminiprogrambackend.po.User;
 
+import java.util.List;
+
 public interface UserMapper {
 
 
@@ -16,4 +18,8 @@ public interface UserMapper {
     Integer updateInfoById(User user);
 
     User getTeacher(String name);
+
+    List<User> getAllStudentUsers();
+
+    List<User> getStudentByUserId(List<Integer> userId);
 }
