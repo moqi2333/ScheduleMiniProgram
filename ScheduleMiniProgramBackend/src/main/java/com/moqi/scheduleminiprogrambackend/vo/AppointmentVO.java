@@ -51,7 +51,21 @@ public class AppointmentVO {
         this.other=appointment.getOther();
         this.name=user.getName();
         this.studentId=user.getStudentId();
+        this.avatar=user.getProfileUrl();
         this.isVisible=isVisible;
+    }
+
+    public AppointmentVO(@NonNull Appointment appointment, User user){
+        this.appointmentId=appointment.getAppointmentId();
+        this.date=appointment.getDate();
+        this.startTime=appointment.getStartTime().toString().substring(0,5);
+        this.endTime=appointment.getEndTime().toString().substring(0,5);
+        this.place=appointment.getPlace();
+        this.content=appointment.getContent();
+        this.other=appointment.getOther();
+        this.name=user.getName();
+        this.studentId=user.getStudentId();
+        this.avatar=user.getProfileUrl();
     }
 
     public AppointmentVO(int appointmentId, String name, String studentId, String avatar, Date date, String startTime, String endTime, String place, String content, String other) {

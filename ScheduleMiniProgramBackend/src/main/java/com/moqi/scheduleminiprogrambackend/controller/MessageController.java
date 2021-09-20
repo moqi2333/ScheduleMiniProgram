@@ -3,9 +3,11 @@ package com.moqi.scheduleminiprogrambackend.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.moqi.scheduleminiprogrambackend.service.MessageService;
+import com.moqi.scheduleminiprogrambackend.vo.MessageZoneVO;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @CrossOrigin
 @RequestMapping("/message")
@@ -44,4 +46,10 @@ public class MessageController {
                                          @RequestParam(name = "zoneId") int zoneId){
         return messageService.getMessageByZoneId(skey,zoneId);
     }
+
+    @GetMapping("/getMessageZoneByUserId")
+    public List<MessageZoneVO> getMessageZoneByUserId(@RequestParam(name = "userId")int userId){
+        return messageService.getMessageZoneByUserId(userId);
+    }
+
 }

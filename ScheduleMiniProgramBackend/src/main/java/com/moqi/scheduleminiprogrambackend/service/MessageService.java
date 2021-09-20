@@ -1,6 +1,9 @@
 package com.moqi.scheduleminiprogrambackend.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.moqi.scheduleminiprogrambackend.vo.MessageZoneVO;
+
+import java.util.List;
 
 public interface MessageService {
 
@@ -44,4 +47,11 @@ public interface MessageService {
      */
     JSONObject getMessageByZoneId(String skey,int zoneId);
 
+
+    /**
+     * 根据用户的id获取用户的留言信息
+     * @param userId 用户id
+     * @return 留言区列表
+     */
+    public List<MessageZoneVO> getMessageZoneByUserId(int userId);
 }

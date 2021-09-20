@@ -13,4 +13,6 @@ public interface MessageZoneMapper {
     List<MessageZone> getMessageZoneByOpenId(String openId);
 
     MessageZone getMessageZoneById(Integer id);
+
+    List<MessageZone> getMessageZoneByOpenIds(List<String> openId);
 }

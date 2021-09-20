@@ -21,5 +21,7 @@ public interface UserMapper {
 
     List<User> getAllStudentUsers();
 
-    List<User> getStudentByUserId(List<Integer> userId);
+    List<User> getStudentByUserIds(List<Integer> userId);
+
+    User getStudentByUserId(Integer userId);
 }

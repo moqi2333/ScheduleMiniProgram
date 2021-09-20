@@ -79,8 +79,7 @@ public class MessageServiceImpl implements MessageService {
         HashMap<String,Object> res;
         List<MessageZone> messageZoneList=messageZoneMapper.getAllMessageZone();
         //按时间倒序排序
-        messageZoneList.sort(Comparator.comparing(MessageZone::getCreateTime));
-        Collections.reverse(messageZoneList);
+        messageZoneList.sort(Comparator.comparing(MessageZone::getCreateTime,Comparator.reverseOrder()));
 
         int length=messageZoneList.size();
         int start=(pageIndex-1)*pageSize;
@@ -113,8 +112,7 @@ public class MessageServiceImpl implements MessageService {
         }
         List<MessageZone> messageZoneList=messageZoneMapper.getMessageZoneByOpenId(student.getOpenId());
         //按时间倒序排序
-        messageZoneList.sort(Comparator.comparing(MessageZone::getCreateTime));
-        Collections.reverse(messageZoneList);
+        messageZoneList.sort(Comparator.comparing(MessageZone::getCreateTime,Comparator.reverseOrder()));
 
         List<MessageZoneVO> messageZoneVOList=new ArrayList<>();
         for (MessageZone messageZone : messageZoneList) {
@@ -187,16 +185,13 @@ public class MessageServiceImpl implements MessageService {
         }*/
 
         List<Message> messageList=messageMapper.getMessageByZoneId(zoneId);
-        //按时间倒序排序
+        //按时间顺序排序
         messageList.sort(Comparator.comparing(Message::getCreateTime));
-        Collections.reverse(messageList);
 
         List<MessageVO> messageVOList=new ArrayList<>();
         for (Message message : messageList) {
             messageVOList.add(new MessageVO(message));
         }
-
-
 
         res=ResponseUtil.createResponse(Constant.SUCCESS,"查询成功");
         res.put("teacherAvatar",teacher.getProfileUrl());
@@ -213,5 +208,23 @@ public class MessageServiceImpl implements MessageService {
             messageMapper.updateStatusByZoneId(zoneId,TEACHER_TO_STUDENT);
         }
         return new JSONObject(res);
+    }
+
+    /**
+     * 根据用户的id获取用户的留言信息
+     * @param userId 用户id
+     * @return 留言区列表
+     */
+    @Override
+    public List<MessageZoneVO> getMessageZoneByUserId(int userId) {
+        User user=userMapper.getStudentByUserId(userId);
+        List<MessageZone> messageZoneList=messageZoneMapper.getMessageZoneByOpenId(user.getOpenId());
+        messageZoneList.sort(Comparator.comparing(MessageZone::getCreateTime,Comparator.reverseOrder()));
+
+        List<MessageZoneVO> messageZoneVOList=new ArrayList<>();
+        for (MessageZone messageZone : messageZoneList) {
+            messageZoneVOList.add(new MessageZoneVO(messageZone,user,0));
+        }
+        return messageZoneVOList;
     }
 }

@@ -21,6 +21,12 @@
   <select id="getMessageZoneById" resultType="com.moqi.scheduleminiprogrambackend.po.MessageZone">
     select * from messageZone where messageZoneId=#{id};
   </select>
+  <select id="getMessageZoneByOpenIds" resultType="com.moqi.scheduleminiprogrambackend.po.MessageZone">
+    select * from messageZone where studentOpenId in
+    <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
 
 
 </mapper>

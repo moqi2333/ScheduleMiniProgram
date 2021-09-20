@@ -45,11 +45,14 @@
   <select id="getAllStudentUsers" resultType="com.moqi.scheduleminiprogrambackend.po.User">
     select * from user where name is not null and isteacher=0;
   </select>
-  <select id="getStudentByUserId" resultType="com.moqi.scheduleminiprogrambackend.po.User">
+  <select id="getStudentByUserIds" resultType="com.moqi.scheduleminiprogrambackend.po.User">
     select * from user where userId in
     <foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
       #{item}
     </foreach>
+  </select>
+  <select id="getStudentByUserId" resultType="com.moqi.scheduleminiprogrambackend.po.User">
+    select * from user where userId=#{userId};
   </select>
 
 </mapper>

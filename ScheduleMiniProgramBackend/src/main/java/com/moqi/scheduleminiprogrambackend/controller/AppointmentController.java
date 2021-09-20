@@ -109,5 +109,8 @@ public class AppointmentController {
         return appointmentService.getForm(userIds);
     }
 
-
+    @GetMapping("/getAppointmentByUserId")
+    public List<AppointmentVO> getAppointmentByUserId(@RequestParam(name = "userId") int userId){
+        return appointmentService.getAppointmentByUserId(userId);
+    }
 }

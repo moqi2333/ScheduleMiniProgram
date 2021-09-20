@@ -2,10 +2,10 @@ package com.moqi.scheduleminiprogrambackend.serviceImpl;
 
 import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
-import com.moqi.scheduleminiprogrambackend.mapperService.AppointmentMapper;
-import com.moqi.scheduleminiprogrambackend.mapperService.PermissionMapper;
-import com.moqi.scheduleminiprogrambackend.mapperService.UserMapper;
+import com.moqi.scheduleminiprogrambackend.mapperService.*;
 import com.moqi.scheduleminiprogrambackend.po.Appointment;
+import com.moqi.scheduleminiprogrambackend.po.Message;
+import com.moqi.scheduleminiprogrambackend.po.MessageZone;
 import com.moqi.scheduleminiprogrambackend.po.User;
 import com.moqi.scheduleminiprogrambackend.service.AppointmentService;
 import com.moqi.scheduleminiprogrambackend.util.*;
@@ -17,7 +17,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author moqi
@@ -37,6 +36,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Resource
     OssClientUtil ossClientUtil;
+
+    @Resource
+    MessageZoneMapper messageZoneMapper;
+
+    @Resource
+    MessageMapper messageMapper;
 
     static final String TEACHER_NAME="毕菲菲";
 
@@ -87,11 +92,11 @@ public class AppointmentServiceImpl implements AppointmentService {
         String place=appointmentInfo.get("place");
         String content=appointmentInfo.get("content");
         String other=appointmentInfo.get("other");
-        if(place==null){
+        if("".equals(place)){
             res=ResponseUtil.createResponse(Constant.FAIL,"未填写地点,请正确填写地点");
             return new JSONObject(res);
         }
-        if(content==null){
+        if("".equals(content)){
             res=ResponseUtil.createResponse(Constant.FAIL,"未填写预约相关内容,请正确填写相关内容");
             return new JSONObject(res);
         }
@@ -345,8 +350,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         //将列表按时间倒序
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
-        Collections.reverse(appointmentList);
+        appointmentList.sort(Comparator.comparing(Appointment::getDate,Comparator.reverseOrder()));
 
         int length=appointmentList.size();
         int start=(pageIndex-1)*pageSize;
@@ -376,11 +380,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     public RecordVO getRecord(int appointmentId) {
         Appointment appointment=appointmentMapper.getAppointmentById(appointmentId);
         User user=userMapper.selectByOpenId(appointment.getStudentOpenId());
-        RecordVO recordVO=new RecordVO(appointment);
-        recordVO.setName(user.getName());
-        recordVO.setAvatar(user.getProfileUrl());
-        recordVO.setStudentId(user.getStudentId());
-        return recordVO;
+        return new RecordVO(appointment,user);
     }
 
     /**
@@ -439,8 +439,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             return new JSONObject(res);
         }
         //将列表按时间倒序
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
-        Collections.reverse(appointmentList);
+        appointmentList.sort(Comparator.comparing(Appointment::getDate,Comparator.reverseOrder()));
 
         int length=appointmentList.size();
         int start=(pageIndex-1)*pageSize;
@@ -548,8 +547,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         List<Appointment> appointmentList= appointmentMapper.getAppointmentByStatus(status);
         //按时间倒序排列
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
-        Collections.reverse(appointmentList);
+        appointmentList.sort(Comparator.comparing(Appointment::getDate,Comparator.reverseOrder()));
 
         int length=appointmentList.size();
         int start=(pageIndex-1)*pageSize;
@@ -616,8 +614,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new RuntimeException("未根据skey查询到相关用户");
         }
         List<Appointment> appointmentList=appointmentMapper.getStudentAppointmentByStatus(user.getOpenId(),status);
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
-        Collections.reverse(appointmentList);
+        appointmentList.sort(Comparator.comparing(Appointment::getDate,Comparator.reverseOrder()));
 
         List<AppointmentVO> appointmentVOList=new ArrayList<>();
         for (Appointment appointment : appointmentList) {
@@ -647,8 +644,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointmentList = appointmentMapper.getStudentFeedbackByStatus(user.getOpenId(),"not");
         }
         assert appointmentList != null;
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
-        Collections.reverse(appointmentList);
+        appointmentList.sort(Comparator.comparing(Appointment::getDate,Comparator.reverseOrder()));
 
         List<FeedbackListItemVO> feedbackListItemVOList=new ArrayList<>();
         for (Appointment appointment : appointmentList) {
@@ -668,23 +664,55 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public JSONObject getForm(List<Integer> userIds) {
         HashMap<String,Object> res;
-        List<User> userList=userMapper.getStudentByUserId(userIds);
-        List<String> openIdList=userList.stream().map(User::getOpenId).collect(Collectors.toList());
-        List<Appointment> appointmentList=appointmentMapper.getFormByOpenId(openIdList);
-        appointmentList.sort(Comparator.comparing(Appointment::getDate));
+        List<User> userList=userMapper.getStudentByUserIds(userIds);
+
         List<ExcelInfo> excelInfos=new ArrayList<>();
-        for (Appointment appointment : appointmentList) {
-            User user=userMapper.selectByOpenId(appointment.getStudentOpenId());
-            ExcelInfo excelInfo=new ExcelInfo(appointment,user);
-            excelInfos.add(excelInfo);
+        for (User user : userList) {
+            List<Appointment> appointmentList=appointmentMapper.getAppointmentByOpenId(user.getOpenId());
+            for (Appointment appointment : appointmentList) {
+                excelInfos.add(new ExcelInfo(appointment,user));
+            }
         }
+
+        List<MessageInfo> messageInfoList=new ArrayList<>();
+        for (User user : userList) {
+            List<MessageZone> messageZoneList=messageZoneMapper.getMessageZoneByOpenId(user.getOpenId());
+            for (MessageZone messageZone : messageZoneList) {
+                List<Message> messageList=messageMapper.getMessageByZoneId(messageZone.getMessageZoneId());
+                messageList.sort(Comparator.comparing(Message::getCreateTime));
+                messageInfoList.add(new MessageInfo(messageZone,user,messageList));
+            }
+        }
+
+        //按时间倒序
+        excelInfos.sort(Comparator.comparing(ExcelInfo::getStudentId).thenComparing(ExcelInfo::getStartTime,Comparator.reverseOrder()));
+        messageInfoList.sort(Comparator.comparing(MessageInfo::getStudentId).thenComparing(MessageInfo::getCreateTime,Comparator.reverseOrder()));
+
         String fileName=new Date(System.currentTimeMillis())+".xlsx";
         ossClientUtil.init();
-        ossClientUtil.uploadExcel2Oss(ExcelUtil.createExcel(excelInfos), fileName);
+        ossClientUtil.uploadExcel2Oss(ExcelUtil.createExcel(excelInfos,messageInfoList), fileName);
         String url=ossClientUtil.getUrlByName(fileName);
         res=ResponseUtil.createResponse(Constant.SUCCESS,"导出成功");
         res.put("url",url);
         return new JSONObject(res);
+    }
+
+    /**
+     * 根据用户的id获取用户的预约信息
+     * @param userId 用户id
+     * @return 预约信息列表
+     */
+    @Override
+    public List<AppointmentVO> getAppointmentByUserId(int userId) {
+        User user = userMapper.getStudentByUserId(userId);
+        List<Appointment> appointmentList=appointmentMapper.getAppointmentByOpenId(user.getOpenId());
+
+        List<AppointmentVO> appointmentVOList=new ArrayList<>();
+        for (Appointment appointment : appointmentList) {
+            appointmentVOList.add(new AppointmentVO(appointment,user));
+        }
+        appointmentVOList.sort(Comparator.comparing(AppointmentVO::getDate,Comparator.reverseOrder()));
+        return appointmentVOList;
     }
 
 }

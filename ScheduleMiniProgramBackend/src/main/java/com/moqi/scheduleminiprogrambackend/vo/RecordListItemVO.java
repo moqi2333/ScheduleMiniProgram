@@ -1,6 +1,7 @@
 package com.moqi.scheduleminiprogrambackend.vo;
 
 import com.moqi.scheduleminiprogrambackend.po.Appointment;
+import com.moqi.scheduleminiprogrambackend.po.User;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -49,6 +50,19 @@ public class RecordListItemVO {
         this.createTime=appointment.getRecordTime()==null?null:new Timestamp(appointment.getRecordTime().getTime()).toString().substring(0,16);
         this.place=appointment.getPlace();
         this.content=appointment.getContent();
+    }
+
+    public RecordListItemVO(Appointment appointment, User user) {
+        this.appointmentId=appointment.getAppointmentId();
+        this.date=appointment.getDate();
+        this.startTime=appointment.getStartTime();
+        this.endTime=appointment.getEndTime();
+        this.createTime=appointment.getRecordTime()==null?null:new Timestamp(appointment.getRecordTime().getTime()).toString().substring(0,16);
+        this.place=appointment.getPlace();
+        this.content=appointment.getContent();
+        this.avatar=user.getProfileUrl();
+        this.name= user.getName();
+        this.studentId=user.getStudentId();
     }
 
     public int getAppointmentId() {

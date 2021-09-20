@@ -1,10 +1,7 @@
 package com.moqi.scheduleminiprogrambackend.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.moqi.scheduleminiprogrambackend.vo.AppointmentVO;
-import com.moqi.scheduleminiprogrambackend.vo.FeedbackListItemVO;
-import com.moqi.scheduleminiprogrambackend.vo.FeedbackVO;
-import com.moqi.scheduleminiprogrambackend.vo.RecordVO;
+import com.moqi.scheduleminiprogrambackend.vo.*;
 
 import java.sql.Date;
 import java.util.HashMap;
@@ -138,4 +135,13 @@ public interface AppointmentService {
      * @return 规定格式
      */
     public JSONObject getForm(List<Integer> userIds);
+
+    /**
+     * 根据用户的id获取用户的预约信息
+     * @param userId 用户id
+     * @return 预约信息列表
+     */
+    public List<AppointmentVO> getAppointmentByUserId(int userId);
+
+    ;
 }

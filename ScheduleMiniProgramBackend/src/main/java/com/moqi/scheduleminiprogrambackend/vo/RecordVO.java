@@ -1,12 +1,15 @@
 package com.moqi.scheduleminiprogrambackend.vo;
 
 import com.moqi.scheduleminiprogrambackend.po.Appointment;
+import com.moqi.scheduleminiprogrambackend.po.User;
 
 import java.sql.Timestamp;
 
 public class RecordVO {
 
     private String record;
+
+    private int userId;
 
     private String avatar;
 
@@ -28,8 +31,9 @@ public class RecordVO {
 
     private String other;
 
-    public RecordVO(String record, String avatar, String name, String studentId, String createTime, String date, String startTime, String endTime, String place, String content, String other) {
+    public RecordVO(String record, int userId, String avatar, String name, String studentId, String createTime, String date, String startTime, String endTime, String place, String content, String other) {
         this.record = record;
+        this.userId = userId;
         this.avatar = avatar;
         this.name = name;
         this.studentId = studentId;
@@ -42,6 +46,7 @@ public class RecordVO {
         this.other = other;
     }
 
+
     public RecordVO(Appointment appointment) {
         this.record=appointment.getRecord();
         this.createTime=appointment.getRecordTime()==null?null:new Timestamp(appointment.getRecordTime().getTime()).toString().substring(0,16);
@@ -51,6 +56,21 @@ public class RecordVO {
         this.place= appointment.getPlace();
         this.content=appointment.getContent();
         this.other=appointment.getOther();
+    }
+
+    public RecordVO(Appointment appointment, User user){
+        this.record=appointment.getRecord();
+        this.createTime=appointment.getRecordTime()==null?null:new Timestamp(appointment.getRecordTime().getTime()).toString().substring(0,16);
+        this.date=appointment.getDate().toString();
+        this.startTime=appointment.getStartTime().toString().substring(0,5);
+        this.endTime=appointment.getEndTime().toString().substring(0,5);
+        this.place= appointment.getPlace();
+        this.content=appointment.getContent();
+        this.other=appointment.getOther();
+        this.studentId=user.getStudentId();
+        this.userId=user.getUserId();
+        this.avatar=user.getProfileUrl();
+        this.name=user.getName();
     }
 
     public String getRecord() {
@@ -139,5 +159,13 @@ public class RecordVO {
 
     public void setStudentId(String studentId) {
         this.studentId = studentId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

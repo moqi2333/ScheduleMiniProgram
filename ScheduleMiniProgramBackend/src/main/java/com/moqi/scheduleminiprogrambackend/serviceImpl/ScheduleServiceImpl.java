@@ -32,6 +32,11 @@ public class ScheduleServiceImpl implements ScheduleService {
             res=ResponseUtil.createResponse(Constant.FAIL,"未填写时间,请正确填写时间段");
             return new JSONObject(res);
         }
+        //判断是否填写地点和内容
+        if("".equals(scheduleVO.getPlace())|| "".equals(scheduleVO.getContent())){
+            res=ResponseUtil.createResponse(Constant.FAIL,"未填写地点或内容，请重新填写");
+            return new JSONObject(res);
+        }
         Schedule schedule=new Schedule(scheduleVO);
         if(schedule.getStartTime().after(schedule.getEndTime())){
             res=ResponseUtil.createResponse(Constant.FAIL,"开始时间不能大于结束时间");
