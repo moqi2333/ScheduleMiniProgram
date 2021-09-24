@@ -38,6 +38,10 @@ public class UserController {
         return userService.getInformation(skey);
     }
 
+    /**
+     * 获取所有的学生信息
+     * @return 学生信息的列表
+     */
     @GetMapping("/getAllUsers")
     public JSONObject getAllUsers(){
         return userService.getAllUsers();

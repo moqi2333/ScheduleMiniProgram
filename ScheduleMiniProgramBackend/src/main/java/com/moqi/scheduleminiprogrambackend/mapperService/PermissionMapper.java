@@ -12,5 +12,7 @@ public interface PermissionMapper {
 
     Integer updateCancelCount(String openId,String option);
 
+    Integer updateMessageCount(String openId,String option);
+
     Permission getPermission(String openId);
 }

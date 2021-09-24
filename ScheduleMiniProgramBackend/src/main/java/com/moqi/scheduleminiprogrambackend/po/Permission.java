@@ -10,12 +10,15 @@ public class Permission {
 
     private int sendCancelCount;
 
+    private int sendMessageCount;
 
-    public Permission(String openId, int sendAppointmentCount, int sendStatusCount, int sendCancelCount) {
+
+    public Permission(String openId, int sendAppointmentCount, int sendStatusCount, int sendCancelCount, int sendMessageCount) {
         this.openId = openId;
         this.sendAppointmentCount = sendAppointmentCount;
         this.sendStatusCount = sendStatusCount;
         this.sendCancelCount = sendCancelCount;
+        this.sendMessageCount = sendMessageCount;
     }
 
     public Permission() {
@@ -51,5 +54,13 @@ public class Permission {
 
     public void setSendCancelCount(int sendCancelCount) {
         this.sendCancelCount = sendCancelCount;
+    }
+
+    public int getSendMessageCount() {
+        return sendMessageCount;
+    }
+
+    public void setSendMessageCount(int sendMessageCount) {
+        this.sendMessageCount = sendMessageCount;
     }
 }

@@ -1,18 +1,18 @@
 package com.moqi.scheduleminiprogrambackend.serviceImpl;
 
+import cn.hutool.core.date.DateTime;
 import com.alibaba.fastjson.JSONObject;
 import com.moqi.scheduleminiprogrambackend.mapperService.MessageMapper;
 import com.moqi.scheduleminiprogrambackend.mapperService.MessageZoneMapper;
+import com.moqi.scheduleminiprogrambackend.mapperService.PermissionMapper;
 import com.moqi.scheduleminiprogrambackend.mapperService.UserMapper;
-import com.moqi.scheduleminiprogrambackend.po.Appointment;
 import com.moqi.scheduleminiprogrambackend.po.Message;
 import com.moqi.scheduleminiprogrambackend.po.MessageZone;
 import com.moqi.scheduleminiprogrambackend.po.User;
 import com.moqi.scheduleminiprogrambackend.service.MessageService;
-import com.moqi.scheduleminiprogrambackend.service.UserService;
 import com.moqi.scheduleminiprogrambackend.util.Constant;
 import com.moqi.scheduleminiprogrambackend.util.ResponseUtil;
-import com.moqi.scheduleminiprogrambackend.vo.AppointmentVO;
+import com.moqi.scheduleminiprogrambackend.util.WeChatUtil;
 import com.moqi.scheduleminiprogrambackend.vo.MessageVO;
 import com.moqi.scheduleminiprogrambackend.vo.MessageZoneVO;
 import org.springframework.stereotype.Service;
@@ -32,6 +32,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Resource
     MessageZoneMapper messageZoneMapper;
+
+    @Resource
+    PermissionMapper permissionMapper;
 
     private static final int TEACHER_TO_STUDENT=1;
 
@@ -144,17 +147,31 @@ public class MessageServiceImpl implements MessageService {
             res= ResponseUtil.createResponse(Constant.FAIL,"未根据skey查询到相关用户");
             return new JSONObject(res);
         }
-
+        boolean isTeacher=user.getIsTeacher()==1;
         Message message;
-        if(user.getIsTeacher()==1){
-            message=new Message(TEACHER_TO_STUDENT,content,new Date(),zoneId,0);
+        Date dateNow=new Date();
+        if(isTeacher){
+            message=new Message(TEACHER_TO_STUDENT,content,dateNow,zoneId,0);
         }
         else {
-            message=new Message(STUDENT_TO_TEACHER,content,new Date(),zoneId,0);
+            message=new Message(STUDENT_TO_TEACHER,content,dateNow,zoneId,0);
         }
-
+        MessageZone messageZone=messageZoneMapper.getMessageZoneById(zoneId);
         if(messageMapper.insert(message)>0){
             res=ResponseUtil.createResponse(Constant.SUCCESS,"创建成功");
+            if(isTeacher){
+                if("ok".equals(WeChatUtil.sendMessageMsg(messageZone.getStudentOpenId(),user.getName(),
+                        new DateTime().toString(),messageZone.getTopic(),content))){
+                    permissionMapper.updateMessageCount(messageZone.getStudentOpenId(),"-1");
+                }
+            }
+            else {
+                User teacher=userMapper.getTeacher(TEACHER_NAME);
+                if("ok".equals(WeChatUtil.sendMessageMsg(teacher.getOpenId(),user.getName(),
+                        new DateTime().toString(),messageZone.getTopic(),content))){
+                    permissionMapper.updateMessageCount(teacher.getOpenId(),"-1");
+                }
+            }
         }
         else{
             res=ResponseUtil.createResponse(Constant.FAIL,"创建失败，数据库发生未知错误");

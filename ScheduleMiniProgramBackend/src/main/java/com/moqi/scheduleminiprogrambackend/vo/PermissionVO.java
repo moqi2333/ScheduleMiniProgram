@@ -10,17 +10,22 @@ public class PermissionVO {
 
     private int sendCancelCount;
 
+    private int sendMessageCount;
+
     public PermissionVO(Permission permission){
         this.sendAppointmentCount = permission.getSendAppointmentCount();
         this.sendStatusCount = permission.getSendStatusCount();
         this.sendCancelCount = permission.getSendCancelCount();
+        this.sendMessageCount=permission.getSendMessageCount();
     }
 
-    public PermissionVO(String openId, int sendAppointmentCount, int sendStatusCount, int sendCancelCount) {
+    public PermissionVO(int sendAppointmentCount, int sendStatusCount, int sendCancelCount, int sendMessageCount) {
         this.sendAppointmentCount = sendAppointmentCount;
         this.sendStatusCount = sendStatusCount;
         this.sendCancelCount = sendCancelCount;
+        this.sendMessageCount = sendMessageCount;
     }
+
 
     public int getSendAppointmentCount() {
         return sendAppointmentCount;
@@ -44,5 +49,13 @@ public class PermissionVO {
 
     public void setSendCancelCount(int sendCancelCount) {
         this.sendCancelCount = sendCancelCount;
+    }
+
+    public int getSendMessageCount() {
+        return sendMessageCount;
+    }
+
+    public void setSendMessageCount(int sendMessageCount) {
+        this.sendMessageCount = sendMessageCount;
     }
 }

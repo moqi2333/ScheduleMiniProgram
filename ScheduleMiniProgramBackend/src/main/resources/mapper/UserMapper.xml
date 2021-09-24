@@ -19,8 +19,8 @@
     <result column="country" property="country"/>
    </resultMap>
   <insert id="insert" parameterType="com.moqi.scheduleminiprogrambackend.po.User">
-    insert into user values (#{openId},#{skey},#{createTime},#{lastVisitTime},#{sessionKey},0,#{name},#{studentId},
-                             #{nickName},#{gender},#{profileUrl},#{city},#{province},#{country});
+    insert into user (openId,skey,createTime,lastVisitTime,sessionKey,isTeacher,name,studentId,nickName,gender,profileUrl,city,province,country)
+        values (#{openId},#{skey},#{createTime},#{lastVisitTime},#{sessionKey},0,#{name},#{studentId},#{nickName},#{gender},#{profileUrl},#{city},#{province},#{country});
   </insert>
 
   <update id="updateById">

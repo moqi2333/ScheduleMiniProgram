@@ -102,4 +102,25 @@ public class PermissionServiceImpl implements PermissionService {
         }
         return new JSONObject(res);
     }
+
+    /**
+     * 增加用户可收到留言通知的数量
+     * @param skey 登陆凭证
+     * @return 规定的返回格式
+     */
+    @Override
+    public JSONObject increaseMessageCount(String skey) {
+        HashMap<String,Object> res;
+        User user=userMapper.selectBySkey(skey);
+        String openId=user.getOpenId();
+        if(permissionMapper.updateMessageCount(openId,"+1")>0){
+            Permission permission= permissionMapper.getPermission(openId);
+            res=ResponseUtil.createResponse(Constant.SUCCESS,"增加成功");
+            res.put("data",permission.getSendMessageCount());
+        }
+        else {
+            res=ResponseUtil.createResponse(Constant.FAIL,"增加失败");
+        }
+        return new JSONObject(res);
+    }
 }

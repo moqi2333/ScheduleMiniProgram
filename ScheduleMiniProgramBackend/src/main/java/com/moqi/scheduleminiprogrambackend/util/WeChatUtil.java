@@ -1,5 +1,6 @@
 package com.moqi.scheduleminiprogrambackend.util;
 
+import cn.hutool.core.date.DateTime;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -185,9 +186,39 @@ public class WeChatUtil {
         return res.getString("errmsg");
     }
 
+    public static String sendMessageMsg(String openId,String name,String createTime,String topic,String content){
+        resetAccessToken();
+        String requestUrl="https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token="+accessToken;
+        HashMap<String, Object> requestUrlParam = new HashMap<>();
+        String toUser=openId;
+        //发送预约状态变更的模板Id
+        String templateId="06Py1CeiC30nfTpt4pVyYi_GtPHO4nGMqF4uS0fOr9I";
+        String page="pages/myinfo/messageBoard/messageBoard";
+
+        //构建data数据
+        MessageMsgBean data=new MessageMsgBean();
+        data.setName1(new MessageMsgBean.Name1(name));
+        data.setTime2(new MessageMsgBean.Time2(createTime.length()<=19?createTime:createTime.substring(0,19)));
+        //thing的长度有一定的限制
+        data.setThing5(new MessageMsgBean.Thing5(topic.length()<=15?topic:(topic.substring(0,15)+"……")));
+        data.setThing3(new MessageMsgBean.Thing3(content.length()<=15?content:(content.substring(0,15)+"……")));
+
+        //构建最外层请求参数
+        requestUrlParam.put("touser",toUser);
+        requestUrlParam.put("template_id",templateId);
+        requestUrlParam.put("data",data);
+        requestUrlParam.put("page",page);
+
+        String para=JSON.toJSONString(requestUrlParam);
+
+        JSONObject res=JSON.parseObject(HttpUtil.post(requestUrl,para));
+        System.out.println(res);
+        return res.getString("errmsg");
+    }
+
     /*public static void main(String[] args) {
-        WeChatUtil.sendStatusMsg("ocRf55HXnnP51wXOsPsSGgxu","张刘洋",
-                "食堂","2021-8-30","10:42","时间冲突");
+        DateTime dateTime=new DateTime();
+        System.out.println(dateTime);
     }*/
 
    /* public static JSONObject getUserInfo(String encryptedData, String sessionKey, String iv) throws Base64DecodingException {

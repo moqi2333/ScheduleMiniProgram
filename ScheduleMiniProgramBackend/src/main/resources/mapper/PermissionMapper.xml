@@ -7,10 +7,11 @@
     <result column="sendAppointmentCount" property="sendAppointmentCount"/>
     <result column="sendStatusCount" property="sendStatusCount"/>
     <result column="sendCancelCount" property="sendCancelCount"/>
+    <result column="sendMessageCount" property="sendMessageCount"/>
   </resultMap>
 
   <insert id="insert">
-    insert into permission values (#{openId},0,0,0);
+    insert into permission values (#{openId},0,0,0,0);
   </insert>
 
   <update id="updateAppointmentCount">
@@ -21,6 +22,9 @@
   </update>
   <update id="updateCancelCount">
     update permission set sendCancelCount=sendCancelCount${option} where openId=#{openId};
+  </update>
+  <update id="updateMessageCount">
+    update permission set sendMessageCount=sendMessageCount${option} where openId=#{openId};
   </update>
   <select id="getPermission" resultType="com.moqi.scheduleminiprogrambackend.po.Permission">
     select * from permission where openId=#{openId};

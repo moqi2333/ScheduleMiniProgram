@@ -35,4 +35,9 @@ public class PermissionController {
     public JSONObject increaseCancelCount(@RequestParam(name = "skey") String skey){
         return permissionService.increaseCancelCount(skey);
     }
+
+    @PostMapping("/increaseMessageCount")
+    public JSONObject increaseMessageCount(@RequestParam(name = "skey") String skey){
+        return permissionService.increaseMessageCount(skey);
+    }
 }

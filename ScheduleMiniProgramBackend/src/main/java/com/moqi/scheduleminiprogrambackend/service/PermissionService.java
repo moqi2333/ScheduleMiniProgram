@@ -32,4 +32,12 @@ public interface PermissionService {
      * @return 规定格式返回值
      */
     JSONObject increaseCancelCount(String skey);
+
+
+    /**
+     * 增加用户可收到留言通知的数量
+     * @param skey 登陆凭证
+     * @return 规定的返回格式
+     */
+    JSONObject increaseMessageCount(String skey);
 }
