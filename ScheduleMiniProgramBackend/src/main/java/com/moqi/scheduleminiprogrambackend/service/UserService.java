@@ -13,6 +13,14 @@ public interface UserService {
      */
     JSONObject login(String code);
 
+    /**
+     * 完善用户信息
+     * @param skey 登录凭证
+     * @param name 用户姓名
+     * @param studentId 用户学号
+     * @param avatar 用户头像url
+     * @return 规定的返回结构
+     */
     JSONObject certification(String skey,String name,String studentId,String avatar);
 
     ResultVO<UserVO> getInformation(String skey);
